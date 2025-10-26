@@ -23,3 +23,4 @@ export const MotionP = motion.p as React.FC<
 export const MotionImg = motion.img as React.FC<
   React.ImgHTMLAttributes<HTMLImageElement> & import("framer-motion").MotionProps
 >;
+

@@ -5,6 +5,7 @@ import ShowroomPromo from "./components/ShowroomPromo";
 import Testimonials from "./components/Testimonials";
 import Gallery from "./components/Gallery";
 import CallToAction from "./components/CallToAction";
+import FeaturedCategories from "./components/FeaturedCategories";
 
 export const metadata: Metadata = {
   title: "Old Car Portfolio - Timeless Classics",
@@ -16,6 +17,7 @@ export default function Home() {
   return (
     <div className="bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100">
       <HeroSection />
+      <FeaturedCategories />
       <FeaturedCars />
       <ShowroomPromo />
       <Testimonials />
