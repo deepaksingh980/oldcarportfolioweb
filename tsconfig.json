@@ -38,7 +38,7 @@
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts",
     "next.config.mjs"
-  ],
+, "app/api/routests"  ],
   "exclude": [
     "node_modules"
   ]
