@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { cars } from "../data/carsData";
 import CarCard from "../components/CarCard";
 import AnimatedSection from "../components/AnimatedSection";
 import { AnimatePresence } from "framer-motion";
@@ -15,6 +15,10 @@ export default function CarsPage() {
   const initialCategory = searchParams.get("category");
 
   // States
+  const [cars, setCars] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -24,12 +28,30 @@ export default function CarsPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000000]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Initial category from URL
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const res = await fetch("/api/user/all-cars");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to fetch cars");
+        setCars(data);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCars();
+  }, []);
+
+  // Apply initial category filter from URL
   useEffect(() => {
     if (initialCategory) setSelectedCategories([initialCategory]);
   }, [initialCategory]);
 
-  // Extract unique filter options
+  // Derived filter options
   const categories = Array.from(new Set(cars.map((c) => c.category))).sort();
   const brands = Array.from(new Set(cars.map((c) => c.brand))).sort();
   const years = Array.from(new Set(cars.map((c) => String(c.year)))).sort(
@@ -38,7 +60,7 @@ export default function CarsPage() {
   const owners = Array.from(new Set(cars.map((c) => c.ownerType)));
   const statuses = Array.from(new Set(cars.map((c) => c.status)));
 
-  // Helper to toggle checkbox selections
+  // Helper to toggle selection
   const toggleSelection = (
     value: string,
     selected: string[],
@@ -82,7 +104,7 @@ export default function CarsPage() {
     );
   });
 
-  // ✅ Sidebar filter panel
+  // Filter Sidebar Component
   const FilterPanel = () => (
     <>
       {/* 🔍 Search */}
@@ -183,11 +205,10 @@ export default function CarsPage() {
                 onChange={() => toggleSelection(s, selectedStatus, setSelectedStatus)}
               />
               <span
-                className={`px-2 py-0.5 rounded-full ${
-                  s === "Available"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
+                className={`px-2 py-0.5 rounded-full ${s === "Available"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+                  }`}
               >
                 {s}
               </span>
@@ -234,6 +255,19 @@ export default function CarsPage() {
       </button>
     </>
   );
+
+  // 🔄 Loading / Error / Data UI
+  if (loading)
+    return (
+      <div className="py-40 text-center text-gray-500">Loading cars...</div>
+    );
+
+  if (error)
+    return (
+      <div className="py-40 text-center text-red-500">
+        Failed to load cars: {error}
+      </div>
+    );
 
   return (
     <AnimatedSection>
@@ -321,7 +355,7 @@ export default function CarsPage() {
             </div>
           </div>
 
-          {/* Car Grid or Empty State */}
+          {/* Car Grid */}
           {filteredCars.length === 0 ? (
             <p className="text-center text-gray-500 py-20">
               No cars match your filters.
@@ -329,7 +363,7 @@ export default function CarsPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map((car) => (
-                <CarCard key={car.id} car={car} />
+                <CarCard key={car._id} car={car} />
               ))}
             </div>
           )}
@@ -338,3 +372,4 @@ export default function CarsPage() {
     </AnimatedSection>
   );
 }
+

@@ -6,39 +6,39 @@ import toast from "react-hot-toast";
 import { LayoutGrid, List, Trash2, Pencil } from "lucide-react";
 import AdminLayout from "../components/AdminLayout";
 
-export default function Enquiries() {
-  const [enquiries, setEnquiries] = useState<any[]>([]);
+export default function Contacts() {
+  const [contacts, setContacts] = useState<any[]>([]);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<any | null>(null);
   const [newStatus, setNewStatus] = useState<string>("Pending");
   const [viewMode, setViewMode] = useState<"grid" | "card">("grid");
 
-  const fetchEnquiries = async () => {
+  const fetchContacts = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const { data } = await axios.get("/api/enquiries", {
+      const { data } = await axios.get("/api/contact", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setEnquiries(data);
+      setContacts(data);
     } catch {
-      toast.error("Failed to fetch enquiries");
+      toast.error("Failed to fetch contacts");
     }
   };
 
   useEffect(() => {
-    fetchEnquiries();
+    fetchContacts();
   }, []);
 
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete("/api/enquiries", {
+      await axios.delete("/api/contact", {
         headers: { Authorization: `Bearer ${token}` },
         data: { _id: id },
       });
       toast.success("Deleted successfully!");
       setDeleteConfirm(null);
-      fetchEnquiries();
+      fetchContacts();
     } catch {
       toast.error("Failed to delete enquiry");
     }
@@ -49,13 +49,13 @@ export default function Enquiries() {
     try {
       const token = localStorage.getItem("adminToken");
       await axios.put(
-        "/api/enquiries",
+        "/api/contact",
         { _id: editItem._id, status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Status updated!");
       setEditItem(null);
-      fetchEnquiries();
+      fetchContacts();
     } catch {
       toast.error("Failed to update status");
     }
@@ -64,7 +64,7 @@ export default function Enquiries() {
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
-        <h1 className="text-2xl font-bold">Enquiries</h1>
+        <h1 className="text-2xl font-bold">Contacts</h1>
         <button
           onClick={() => setViewMode(viewMode === "grid" ? "card" : "grid")}
           className="bg-neutral-700 text-white px-3 py-2 rounded-md flex items-center gap-2"
@@ -88,14 +88,14 @@ export default function Enquiries() {
               </tr>
             </thead>
             <tbody>
-              {enquiries.length === 0 ? (
+              {contacts.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center p-4 text-gray-500">
-                    No enquiries found
+                    No contacts found
                   </td>
                 </tr>
               ) : (
-                enquiries.map((e) => (
+                contacts.map((e) => (
                   <tr
                     key={e._id}
                     className="border-t border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
@@ -145,12 +145,12 @@ export default function Enquiries() {
       ) : (
         // CARD VIEW
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {enquiries.length === 0 ? (
+          {contacts.length === 0 ? (
             <p className="text-gray-500 text-center col-span-full">
-              No enquiries found
+              No contacts found
             </p>
           ) : (
-            enquiries.map((e) => (
+            contacts.map((e) => (
               <div
                 key={e._id}
                 className="bg-white dark:bg-neutral-800 p-4 rounded-xl shadow-md border border-neutral-200 dark:border-neutral-700 flex flex-col justify-between"

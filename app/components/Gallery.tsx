@@ -9,14 +9,36 @@ import { useEffect, useState, useCallback } from "react";
 import { ArrowRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+type GalleryItem = {
+  _id: string;
+  image: string[];
+  title: string;
+  caption?: string;
+  status: boolean;
+  createdAt?: string;
+};
+
 export default function Gallery() {
   const [isMobile, setIsMobile] = useState(false);
-  const [selected, setSelected] = useState<null | {
-    src: string;
-    title: string;
-    date: string;
-  }>(null);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [selected, setSelected] = useState<null | { src: string; title: string; date: string }>(null);
 
+  // 🔹 Fetch gallery items
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const res = await fetch("/api/user/gallery");
+        const data = await res.json();
+        const active = data.filter((item: GalleryItem) => item.status === true);
+        setGallery(active);
+      } catch (err) {
+        console.error("Failed to fetch gallery:", err);
+      }
+    };
+    fetchGallery();
+  }, []);
+
+  // 🔹 Handle responsive layout
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -24,30 +46,32 @@ export default function Gallery() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 🔹 ESC key to close modal
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape") setSelected(null);
   }, []);
 
   useEffect(() => {
-    if (selected) {
-      window.addEventListener("keydown", handleKeyDown);
-    } else {
-      window.removeEventListener("keydown", handleKeyDown);
-    }
+    if (selected) window.addEventListener("keydown", handleKeyDown);
+    else window.removeEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selected, handleKeyDown]);
 
-  const images = [
-    { src: "gallery1.jpg", title: "Vintage Mustang", date: "Oct 2025" },
-    { src: "gallery2.jpg", title: "Classic Rolls Royce", date: "Sept 2025" },
-    { src: "gallery3.jpg", title: "Retro Mercedes", date: "Aug 2025" },
-    { src: "gallery4.jpg", title: "Heritage Jeep", date: "July 2025" },
-    { src: "gallery5.jpg", title: "Chevrolet Beauty", date: "June 2025" },
-  ];
-
-  const [emblaRef] = useEmblaCarousel(
-    { loop: true, align: "start", dragFree: true },
-    [Autoplay({ delay: 3500 })]
+  // 🔹 Main carousel (desktop)
+  const [mainEmblaRef] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      containScroll: "trimSnaps",
+      dragFree: false,
+    },
+    [
+      Autoplay({
+        delay: 4000,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ]
   );
 
   return (
@@ -61,94 +85,106 @@ export default function Gallery() {
           </p>
         </div>
 
-        {/* Desktop Carousel */}
-        {!isMobile && (
+        {gallery.length > 0 ? (
           <>
-            <div className="overflow-hidden" ref={emblaRef}>
-              <MotionDiv
-                className="flex gap-6"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {images.map((img, i) => (
-                  <div
-                    key={i}
-                    onClick={() => setSelected(img)}
-                    className="relative min-w-[80%] sm:min-w-[45%] lg:min-w-[30%] group cursor-pointer"
-                  >
-                    <MotionImg
-                      src={`/images/${img.src}`}
-                      alt={img.title}
-                      className="rounded-xl shadow-lg w-full h-64 object-cover transition-transform duration-300 group-hover:scale-[1.05]"
-                    />
+            {/* Desktop Carousel */}
+            {!isMobile && (
+              <>
+                <div className="embla overflow-hidden" ref={mainEmblaRef}>
+                  <div className="embla__container flex gap-6">
+                    {gallery.map((item, i) => (
+                      <div
+                        key={i}
+                        className="embla__slide flex-[0_0_80%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] relative group cursor-pointer"
+                      >
+                        {/* 🔹 Nested carousel for each gallery's image array */}
+                        <NestedCarousel
+                          images={item.image}
+                          title={item.title}
+                          onClick={(src) =>
+                            setSelected({
+                              src,
+                              title: item.title,
+                              date: new Date(item.createdAt || "").toLocaleDateString(),
+                            })
+                          }
+                        />
 
-                    {/* Overlay */}
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-
-                    {/* Floating Info Card */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-md border border-white/30 dark:border-neutral-700/40 px-4 py-2 rounded-xl shadow-md text-center w-[80%] transition-all duration-300 group-hover:translate-y-[-4px]">
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {img.title}
-                      </h3>
-                      <p className="text-xs text-vintageGold font-medium mt-0.5">
-                        {img.date}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </MotionDiv>
-            </div>
-
-            {/* Explore Link */}
-            <div className="flex justify-center mt-10">
-              <Link
-                href="/gallery"
-                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium hover:gap-3 transition-all duration-300"
-              >
-                Explore Full Gallery <ArrowRight size={18} />
-              </Link>
-            </div>
-          </>
-        )}
-
-        {/* Mobile Grid */}
-        {isMobile && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              {images.slice(0, 4).map((img, i) => (
-                <div
-                  key={i}
-                  onClick={() => setSelected(img)}
-                  className="relative group cursor-pointer"
-                >
-                  <MotionImg
-                    src={`/images/${img.src}`}
-                    alt={img.title}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ duration: 0.3 }}
-                    className="rounded-lg shadow-md w-full h-48 object-cover"
-                  />
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md border border-white/30 dark:border-neutral-700/30 px-3 py-1 rounded-md text-center w-[90%]">
-                    <h3 className="text-xs font-semibold">{img.title}</h3>
-                    <p className="text-[10px] text-vintageGold">{img.date}</p>
+                        {/* Info card */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-md border border-white/30 dark:border-neutral-700/40 px-4 py-2 rounded-xl shadow-md text-center w-[80%] transition-all duration-300 group-hover:translate-y-[-4px]">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                            {item.title}
+                          </h3>
+                          <p className="text-xs text-vintageGold font-medium mt-0.5">
+                            {new Date(item.createdAt || "").toLocaleString("en-US", {
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="flex justify-center mt-8">
-              <Link
-                href="/gallery"
-                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium hover:gap-3 transition-all duration-300"
-              >
-                Explore Full Gallery <ArrowRight size={18} />
-              </Link>
-            </div>
+                <div className="flex justify-center mt-10">
+                  <Link
+                    href="/gallery"
+                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium hover:gap-3 transition-all duration-300"
+                  >
+                    Explore Full Gallery <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </>
+            )}
+
+            {/* Mobile Grid */}
+            {isMobile && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  {gallery.slice(0, 4).map((item, i) => (
+                    <div key={i} className="relative group cursor-pointer">
+                      <NestedCarousel
+                        images={item.image}
+                        title={item.title}
+                        small
+                        onClick={(src) =>
+                          setSelected({
+                            src,
+                            title: item.title,
+                            date: new Date(item.createdAt || "").toLocaleDateString(),
+                          })
+                        }
+                      />
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md border border-white/30 dark:border-neutral-700/30 px-3 py-1 rounded-md text-center w-[90%]">
+                        <h3 className="text-xs font-semibold">{item.title}</h3>
+                        <p className="text-[10px] text-vintageGold">
+                          {new Date(item.createdAt || "").toLocaleString("en-US", {
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-center mt-8">
+                  <Link
+                    href="/gallery"
+                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium hover:gap-3 transition-all duration-300"
+                  >
+                    Explore Full Gallery <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </>
+            )}
           </>
+        ) : (
+          <p className="text-center text-gray-500 dark:text-gray-400">No gallery images available.</p>
         )}
 
-        {/* 🔥 Image Modal */}
+        {/* Modal */}
         <AnimatePresence>
           {selected && (
             <MotionDiv
@@ -175,16 +211,10 @@ export default function Gallery() {
                   <X size={20} />
                 </button>
 
-                <img
-                  src={`/images/${selected.src}`}
-                  alt={selected.title}
-                  className="w-full h-[70vh] object-cover"
-                />
+                <img src={selected.src} alt={selected.title} className="w-full h-[70vh] object-cover" />
 
                 <div className="p-5 text-center">
-                  <h2 className="text-2xl font-semibold mb-1">
-                    {selected.title}
-                  </h2>
+                  <h2 className="text-2xl font-semibold mb-1">{selected.title}</h2>
                   <p className="text-sm text-vintageGold">{selected.date}</p>
                 </div>
               </MotionDiv>
@@ -193,5 +223,54 @@ export default function Gallery() {
         </AnimatePresence>
       </section>
     </AnimatedSection>
+  );
+}
+
+/* 🔹 Reusable Nested Carousel */
+function NestedCarousel({
+  images,
+  title,
+  onClick,
+  small = false,
+}: {
+  images: string[];
+  title: string;
+  onClick: (src: string) => void;
+  small?: boolean;
+}) {
+  const [emblaRef] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      containScroll: "trimSnaps",
+      dragFree: false,
+    },
+    [
+      Autoplay({
+        delay: 3000,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ]
+  );
+
+  return (
+    <div className="embla overflow-hidden rounded-xl shadow-lg" ref={emblaRef}>
+      <div className="embla__container flex">
+        {images.map((src, idx) => (
+          <div
+            key={idx}
+            className="embla__slide flex-[0_0_100%] relative cursor-pointer"
+            onClick={() => onClick(src)}
+          >
+            <MotionImg
+              src={src || "/images/placeholder.jpg"}
+              alt={`${title} - ${idx}`}
+              className={`w-full ${small ? "h-48" : "h-64"} object-cover transition-transform duration-500 ease-out hover:scale-[1.03]`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

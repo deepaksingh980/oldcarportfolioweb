@@ -21,7 +21,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Cars", href: "/admin/cars" },
     { name: "Banners", href: "/admin/banners" },
     { name: "Gallery", href: "/admin/gallery" },
-    { name: "Enquiries", href: "/admin/enquiries" },
+    { name: "Enquiries", href: "/admin/enquiry" },
+    { name: "Contacts", href: "/admin/contact" },
   ];
 
   const handleLogout = () => {
@@ -39,11 +40,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={item.href}
               href={item.href}
-              className={`p-2 rounded-md font-medium transition ${
-                pathname === item.href
-                  ? "bg-yellow-500 text-black"
-                  : "hover:bg-neutral-700"
-              }`}
+              className={`p-2 rounded-md font-medium transition ${pathname === item.href
+                ? "bg-yellow-500 text-black"
+                : "hover:bg-neutral-700"
+                }`}
             >
               {item.name}
             </Link>
@@ -75,11 +75,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`p-2 rounded-md ${
-                  pathname === item.href
-                    ? "bg-yellow-500 text-black"
-                    : "hover:bg-neutral-700"
-                }`}
+                className={`p-2 rounded-md ${pathname === item.href
+                  ? "bg-yellow-500 text-black"
+                  : "hover:bg-neutral-700"
+                  }`}
               >
                 {item.name}
               </Link>

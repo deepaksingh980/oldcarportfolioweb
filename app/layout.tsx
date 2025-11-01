@@ -5,7 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { usePathname } from 'next/navigation';
-
+import HiddenAdminTrigger from "./components/HiddenAdminTrigger";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin'); // ✅ detect admin pages
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="min-h-screen flex flex-col">
             {/* ✅ Hide Navbar and Footer on admin pages */}
             {!isAdmin && <Navbar />}
-
+            <HiddenAdminTrigger />
             <main className="flex-1">{children}</main>
 
             {!isAdmin && <Footer />}

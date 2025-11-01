@@ -23,4 +23,16 @@ export const MotionP = motion.p as React.FC<
 export const MotionImg = motion.img as React.FC<
   React.ImgHTMLAttributes<HTMLImageElement> & import("framer-motion").MotionProps
 >;
+export const MotionArticle = motion.article as React.FC<
+  React.HTMLAttributes<HTMLElement> & import("framer-motion").MotionProps
+>;
+// ✅ NEW: motion.form (with proper onSubmit type)
+export const MotionForm = motion.form as React.FC<
+  React.FormHTMLAttributes<HTMLFormElement> & import("framer-motion").MotionProps
+>;
 
+// ✅ NEW: motion.button (with proper type attribute support)
+export const MotionButton = motion.button as React.FC<
+  React.ButtonHTMLAttributes<HTMLButtonElement> &
+    import("framer-motion").MotionProps
+>;

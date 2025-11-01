@@ -1,7 +1,6 @@
 "use client";
 
 import AnimatedSection from "./AnimatedSection";
-import { cars } from "../data/carsData";
 import CarCard from "./CarCard";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -10,11 +9,38 @@ import { useEffect, useState } from "react";
 import { MotionDiv } from "../components/MotionElements";
 import { ArrowRight } from "lucide-react";
 
+type Car = {
+  _id: string;
+  name: string;
+  slug: string;
+  category: string;
+  images: string[];
+  brand?: string | { name: string };
+  actualPrice?: number;
+  discountedPrice?: number;
+};
+
 export default function FeaturedCars() {
-  const recentCars = [...cars].slice(-5).reverse();
+  const [cars, setCars] = useState<Car[]>([]);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile
+  // ✅ Fetch cars
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const res = await fetch("/api/user/all-cars");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setCars(data.slice(0, 5));
+        }
+      } catch (error) {
+        console.error("❌ Error fetching cars:", error);
+      }
+    };
+    fetchCars();
+  }, []);
+
+  // ✅ Handle responsiveness
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -22,10 +48,22 @@ export default function FeaturedCars() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Embla Carousel for desktop
+  // ✅ Embla Carousel Setup
   const [emblaRef] = useEmblaCarousel(
-    { loop: true, align: "start", dragFree: true },
-    [Autoplay({ delay: 4000 })]
+    {
+      loop: true,
+      align: "start",
+      containScroll: "trimSnaps",
+      dragFree: false,
+      skipSnaps: false,
+    },
+    [
+      Autoplay({
+        delay: 3500,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ]
   );
 
   return (
@@ -39,33 +77,37 @@ export default function FeaturedCars() {
           </p>
         </div>
 
-        {/* ✅ Desktop Carousel */}
-        {!isMobile && (
+        {/* Loading state */}
+        {cars.length === 0 ? (
+          <p className="text-center text-gray-500">Loading cars...</p>
+        ) : !isMobile ? (
           <>
+            {/* ✅ Smooth Carousel */}
             <div className="relative">
-              <div className="overflow-hidden" ref={emblaRef}>
-                <MotionDiv
-                  className="flex gap-6"
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {recentCars.map((car) => (
+              <div className="embla overflow-hidden" ref={emblaRef}>
+                <div className="embla__container flex">
+                  {cars.map((car) => (
                     <div
-                      key={car.id}
-                      className="min-w-[80%] sm:min-w-[45%] lg:min-w-[30%]"
+                      key={car._id}
+                      className="embla__slide flex-[0_0_80%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] px-2"
                     >
-                      <CarCard car={car} />
+                      <MotionDiv
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <CarCard car={car} />
+                      </MotionDiv>
                     </div>
                   ))}
-                </MotionDiv>
+                </div>
               </div>
 
-              {/* Subtle right fade */}
+              {/* Fade edge */}
               <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white dark:from-black to-transparent pointer-events-none" />
             </div>
 
-            {/* Explore All link */}
+            {/* Explore all */}
             <div className="flex justify-center mt-10">
               <Link
                 href="/cars"
@@ -75,17 +117,14 @@ export default function FeaturedCars() {
               </Link>
             </div>
           </>
-        )}
-
-        {/* ✅ Mobile Grid */}
-        {isMobile && (
+        ) : (
           <>
+            {/* Mobile Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {recentCars.map((car) => (
-                <CarCard key={car.id} car={car} />
+              {cars.map((car) => (
+                <CarCard key={car._id} car={car} />
               ))}
             </div>
-
             <div className="flex justify-center mt-8">
               <Link
                 href="/cars"
