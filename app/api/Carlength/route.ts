@@ -4,7 +4,12 @@ import Car from "../../models/Car";
 
 // 🟩 GET — fetch all enquiries
 export async function GET() {
-    await dbConnect();
-    const cars = await Car.find({}).sort({ createdAt: -1 }).lean();
-    return NextResponse.json(cars);
+    try {
+        await dbConnect();
+        const cars = await Car.find().lean();
+        return NextResponse.json(cars);
+    } catch (error: any) {
+        console.error("GET /api/carlength error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 }
