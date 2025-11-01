@@ -34,7 +34,7 @@ export default function Dashboard() {
     async function fetchStats() {
       try {
         const [cars, brands, enquiries, gallery] = await Promise.all([
-          axios.get("/api/Carlength"), // adjust if your route is /api/Carlength
+          axios.get("/api/carlength"), // adjust if your route is /api/Carlength
           axios.get("/api/brands"),
           axios.get("/api/enquiry"),
           axios.get("/api/gallery"),
