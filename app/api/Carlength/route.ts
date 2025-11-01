@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../lib/dbConnect";
 import Car from "../../models/Car";
-
+export const dynamic = "force-dynamic";
 // 🟩 GET — fetch all enquiries
 export async function GET() {
     try {
