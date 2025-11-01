@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { MotionDiv } from "../components/MotionElements";
+import Image from "next/image";
+import Logo from "../../public/Logo.png";
+
 const MotionHeader = motion.header as React.FC<
   React.HTMLAttributes<HTMLElement> & { animate?: any }
 >;
@@ -28,15 +31,22 @@ export default function Navbar() {
         animate={{
           backdropFilter: scrolled ? "blur(6px)" : "blur(0px)",
         }}
-        className={`fixed w-full z-40 top-0 transition-all bg-white/70 dark:bg-black/30 ${
-          scrolled ? "shadow-sm" : ""
-        }`}
+        className={`fixed w-full z-40 top-0 transition-all bg-white/70 dark:bg-black/30 ${scrolled ? "shadow-sm" : ""
+          }`}
       >
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="font-bold text-lg">
-            OldCar<span className="text-vintageGold">.</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src={Logo} // ✅ your logo path (place your logo inside /public)
+              alt="Old Car Portfolio Logo"
+              width={50}
+              height={50}
+              priority
+              className="rounded-md object-contain"
+            />
           </Link>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex gap-6 items-center">
