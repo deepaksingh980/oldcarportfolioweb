@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { dbConnect } from "../../lib/dbConnect";
 import Enquiry from "../../models/Contact";
 import { verifyToken } from "../../lib/auth";
