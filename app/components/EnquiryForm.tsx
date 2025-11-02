@@ -7,7 +7,7 @@ export default function EnquiryForm({ carName }: { carName?: string }) {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   // const submit = (e: any) => {
   //   e.preventDefault();
   //   // frontend-only: simulate success
@@ -17,6 +17,7 @@ export default function EnquiryForm({ carName }: { carName?: string }) {
   // };
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch("/api/enquiry", {
@@ -30,11 +31,18 @@ export default function EnquiryForm({ carName }: { carName?: string }) {
       if (!res.ok) throw new Error(data.error || "Failed to send enquiry");
 
       setSent(true);
-      setName(""); setEmail(""); setPhone(""); setMessage("");
+      setName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+
+      // Hide "sent" message after 4 seconds
       setTimeout(() => setSent(false), 4000);
     } catch (err: any) {
       console.error("Enquiry error:", err);
       alert(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,8 +55,20 @@ export default function EnquiryForm({ carName }: { carName?: string }) {
         <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone (optional)" className="px-4 py-2 rounded-lg border" />
         <textarea required value={message} onChange={e => setMessage(e.target.value)} placeholder="Message" className="px-4 py-2 rounded-lg border h-28" />
         <div className="flex items-center gap-3">
-          <button type="submit" className="px-4 py-2 rounded-lg bg-vintageGold text-black font-semibold">Send Enquiry</button>
-          {sent && <div className="text-sm">Enquiry sent (frontend demo)</div>}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-4 py-2 rounded-lg font-semibold transition ${loading
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-vintageGold text-black hover:bg-yellow-500"
+              }`}
+          >
+            {loading ? "Sending..." : sent ? "Sent " : "Send Enquiry"}
+          </button>
+
+          {sent && !loading && (
+            <div className="text-sm text-green-600">Enquiry sent successfully!</div>
+          )}
         </div>
       </div>
     </form>
