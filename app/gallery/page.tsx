@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import AnimatedSection from "../components/AnimatedSection";
 import { MotionDiv, MotionImg } from "../components/MotionElements";
-import { motion, AnimatePresence } from "framer-motion";
+import {  AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 const galleryItems = [

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../lib/dbConnect";
 import Car from "../../models/Car";
-import Brand from "../../models/Brand";
+// import Brand from "../../models/Brand";
 import { verifyToken } from "../../lib/auth";
 
 // 🟩 GET — Fetch all cars or one by slug (with pagination)

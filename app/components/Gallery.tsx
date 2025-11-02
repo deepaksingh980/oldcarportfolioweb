@@ -7,7 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { ArrowRight, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import {  AnimatePresence } from "framer-motion";
 
 type GalleryItem = {
   _id: string;

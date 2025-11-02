@@ -8,7 +8,7 @@ import AdminFormModal from "../components/AdminFormModal";
 import ViewImageModal from "../components/ViewImageModal";
 import { LayoutGrid, List, Edit, Trash2, Eye } from "lucide-react";
 import { MotionDiv, MotionImg } from "../../components/MotionElements";
-import { AnimatePresence, motion } from "framer-motion";
+// import { AnimatePresence, motion } from "framer-motion";
 
 export default function GalleryPage() {
     const [gallery, setGallery] = useState<any[]>([]);

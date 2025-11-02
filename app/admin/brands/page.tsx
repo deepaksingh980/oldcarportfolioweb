@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { LayoutGrid, List, Edit3, Trash2, XCircle } from "lucide-react";
+import { LayoutGrid, List, Edit3, Trash2 } from "lucide-react";
 import AdminFormModal from "../components/AdminFormModal";
 import AdminLayout from "../components/AdminLayout";
 
