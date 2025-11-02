@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../lib/dbConnect";
 import Car from "../../models/Car";
-export const dynamic = "force-dynamic";
 // 🟩 GET — fetch all enquiries
 export async function GET() {
     try {
@@ -9,7 +8,7 @@ export async function GET() {
         const cars = await Car.find().lean();
         return NextResponse.json(cars);
     } catch (error: any) {
-        console.error("GET /api/carlength error:", error);
+        console.error("GET /api/cardata error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

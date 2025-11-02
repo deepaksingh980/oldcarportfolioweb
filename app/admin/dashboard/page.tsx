@@ -34,7 +34,7 @@ export default function Dashboard() {
     async function fetchStats() {
       try {
         const [cars, brands, enquiries, gallery] = await Promise.all([
-          axios.get("/api/carlength"), 
+          axios.get("/api/cardata"),
           axios.get("/api/brands"),
           axios.get("/api/enquiry"),
           axios.get("/api/gallery"),
