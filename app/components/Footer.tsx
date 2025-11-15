@@ -6,10 +6,10 @@ export default function Footer() {
           © {new Date().getFullYear()} OldCar. All rights reserved.
         </div>
         <div className="flex gap-5 text-neutral-600 dark:text-neutral-400">
-          <a href="#" className="hover:text-vintageGold transition-colors">
+          <a href="/privacy" className="hover:text-vintageGold transition-colors">
             Privacy
           </a>
-          <a href="#" className="hover:text-vintageGold transition-colors">
+          <a href="/terms" className="hover:text-vintageGold transition-colors">
             Terms
           </a>
         </div>

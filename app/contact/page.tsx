@@ -12,7 +12,7 @@ export default function Contact() {
   return (
     <AnimatedSection>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-16 text-center">
+      <section className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-16 text-center mt-10">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
           Get in Touch
         </h1>

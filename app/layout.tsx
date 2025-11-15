@@ -1,29 +1,27 @@
-'use client';
-
 import './globals.css';
-import { ThemeProvider } from 'next-themes';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import { usePathname } from 'next/navigation';
-import HiddenAdminTrigger from "./components/HiddenAdminTrigger";
+import { ThemeProviderWrapper } from './components/ThemeProviderWrapper';
+import LayoutContent from './components/LayoutContent';
+
+export const metadata = {
+  title: "Deepak Cars – Used Cars in Bhubaneswar, Odisha",
+  description:
+    "Buy verified second hand cars in Bhubaneswar, Odisha. Premium used cars, budget cars, luxury cars – Deepak Cars.",
+  keywords: [
+    "used cars in bhubaneswar",
+    "second hand cars odisha",
+    "deepak cars bhubaneswar",
+    "car dealership bhubaneswar",
+    "buy used cars odisha",
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin'); // ✅ detect admin pages
-
   return (
-    <html lang="en">
-      <head />
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider attribute="class" enableSystem={true} defaultTheme="light">
-          <div className="min-h-screen flex flex-col">
-            {/* ✅ Hide Navbar and Footer on admin pages */}
-            {!isAdmin && <Navbar />}
-            <HiddenAdminTrigger />
-            <main className="flex-1">{children}</main>
-
-            {!isAdmin && <Footer />}
-          </div>
-        </ThemeProvider>
+        <ThemeProviderWrapper>
+          <LayoutContent>{children}</LayoutContent>
+        </ThemeProviderWrapper>
       </body>
     </html>
   );
