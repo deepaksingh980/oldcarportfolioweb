@@ -39,17 +39,17 @@ export default function Contact() {
             <div className="flex items-center gap-4">
               <Mail className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
               <p className="text-gray-700 dark:text-gray-300">
-                info@oldcarportfolio.com
+                erdeepak0718@gmail.com
               </p>
             </div>
             <div className="flex items-center gap-4">
               <Phone className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-              <p className="text-gray-700 dark:text-gray-300">+91 98765 43210</p>
+              <p className="text-gray-700 dark:text-gray-300">+91 9801558387</p>
             </div>
             <div className="flex items-center gap-4">
               <MapPin className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
               <p className="text-gray-700 dark:text-gray-300">
-                Vintage Car Showroom, MG Road, New Delhi, India
+                Deepak Old Car Showroom, Bhubaneswar,Odisha, India
               </p>
             </div>
           </div>
